@@ -24,7 +24,93 @@ from .serializers import (
     EventSerializer, RegistrationSerializer, RegistrationCreateSerializer,
     AttendanceLogSerializer, EventStatisticsSerializer
 )
+from django.http import HttpResponse
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+from io import BytesIO
 
+from django.contrib.auth.models import User
+from .models import Event, Registration
+
+
+
+def download_admin_report_pdf(request):
+    buffer = BytesIO()
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="admin_report.pdf"'
+
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    elements.append(Paragraph("Admin & Events Report", styles['Title']))
+    elements.append(Spacer(1, 0.5 * inch))
+
+    admins = User.objects.filter(is_staff=True)
+
+    data = [["Admin Username", "Admin Email", "Created Events"]]
+
+    for admin in admins:
+        events = Event.objects.filter(created_by=admin)
+        event_names = ", ".join([event.title for event in events])
+        data.append([admin.username, admin.email, event_names or "No Events"])
+
+    table = Table(data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    response.write(buffer.getvalue())
+    buffer.close()
+    return response
+
+def download_event_registrations_pdf(request, event_id):
+    buffer = BytesIO()
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="event_registrations.pdf"'
+
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    event = Event.objects.get(id=event_id)
+
+    elements.append(Paragraph(f"Registrations for {event.title}", styles['Title']))
+    elements.append(Spacer(1, 0.5 * inch))
+
+    registrations = Registration.objects.filter(event=event)
+
+    data = [["Name", "Email", "Student ID", "Registration ID"]]
+
+    for reg in registrations:
+        data.append([
+            reg.name,
+            reg.email,
+            reg.student_id,
+            reg.registration_id
+        ])
+
+    table = Table(data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    response.write(buffer.getvalue())
+    buffer.close()
+    return response
 
 def send_registration_email(registration, qr_code_image_base64):
     """Send registration confirmation email with QR code"""

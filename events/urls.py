@@ -27,4 +27,7 @@ urlpatterns = [
     path('admin-panel/events/<uuid:event_id>/delete/', views.admin_delete_event, name='admin-delete-event'),
     path('admin-panel/registrations/', views.admin_registrations_view, name='admin-registrations'),
     path('admin-panel/logs/', views.admin_logs_view, name='admin-logs'),
+    path("download/admin-report/", views.download_admin_report_pdf, name="download_admin_report"),
+    path("download/event/<int:event_id>/", views.download_event_registrations_pdf, name="download_event_pdf"),
+
 ]
