@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['.onrender.com']
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage','whitenoise.middleware.WhiteNoiseMiddleware','django.middleware.security.SecurityMiddleware'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage','whitenoise.middleware.WhiteNoiseMiddleware'
 
 
 # Application definition
@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third party apps
     "rest_framework",
-    "corsheaders",
     # Local apps
     "events",
 ]
