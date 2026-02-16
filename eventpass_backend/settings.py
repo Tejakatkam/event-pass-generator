@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-m$hkg%5ra4s2#=rp&wh*%b9db)lkul$qdedn*r4w#un35lq6l7"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = ['*']
@@ -166,8 +166,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@gmail.com'  # Replace with your Gmail
-EMAIL_HOST_PASSWORD = 'your-app-password'  # Replace with Gmail App Password
+EMAIL_HOST_USER = 'tejakatkam2005@gmail.com'  # Replace with your Gmail
+EMAIL_HOST_PASSWORD = 'abhiteja2005'  # Replace with Gmail App Password
 DEFAULT_FROM_EMAIL = 'EventPass Pro <your-email@gmail.com>'
 EMAIL_TIMEOUT = 30
 
