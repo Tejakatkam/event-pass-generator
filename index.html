@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Gate Pass Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-ticket-alt"></i>
+            <span>EventPass Pro</span>
+        </div>
+    </nav>
+
+    <!-- College Header Section -->
+    <div class="college-header">
+        <img src="cmrtc.png" alt="College Logo" class="college-logo">
+    </div>
+
+    <div class="hero-section">
+        <h1>Welcome to EventPass Pro</h1>
+        <p>Generate your digital gate pass for seamless event access</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-qrcode"></i>
+                <h2>Generate Your Gate Pass</h2>
+            </div>
+            
+            <form id="gatePassForm" class="form-container">
+                <div class="form-group">
+                    <label for="name"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="id"><i class="fas fa-id-card"></i> ID</label>
+                    <input type="text" id="id" placeholder="Enter your  ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-magic"></i> Generate Gate Pass
+                </button>
+            </form>
+
+            <div id="qrcode" class="qrcode-container">
+                <!-- QR Code will appear here -->
+            </div>
+        </div>
+
+        <div class="features-section">
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <h3>Instant Generation</h3>
+                <p>Get your QR code pass instantly</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-envelope-open-text"></i>
+                <h3>Email Delivery</h3>
+                <p>Receive your pass directly in your inbox</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>Mobile Friendly</h3>
+                <p>Easy to show at the entrance</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 EventPass Pro. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

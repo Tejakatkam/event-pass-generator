@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrations - Admin Panel</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container { max-width: 1400px; margin: 2rem auto; padding: 0 1rem; }
+        .page-header h1 { color: #333; margin: 0 0 2rem 0; display: flex; align-items: center; gap: 0.5rem; }
+        .table-container { background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        thead { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        th { padding: 1rem; text-align: left; font-weight: 600; }
+        td { padding: 1rem; border-bottom: 1px solid #eee; }
+        tbody tr:hover { background-color: #f8f9fa; }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
+        .badge-valid { background-color: #d4edda; color: #155724; }
+        .badge-used { background-color: #f8d7da; color: #721c24; }
+        .badge-attended { background-color: #cce5ff; color: #004085; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand"><i class="fas fa-shield-alt"></i><span>EventPass Pro - Admin Panel</span></div>
+        <div class="nav-links">
+            <a href="{% url 'admin-panel' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="{% url 'admin-events' %}"><i class="fas fa-calendar-alt"></i> Events</a>
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="page-header">
+            <h1><i class="fas fa-users"></i> All Registrations</h1>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Student ID</th>
+                        <th>Email</th>
+                        <th>Event</th>
+                        <th>Registered At</th>
+                        <th>Status</th>
+                        <th>Attended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reg in registrations %}
+                    <tr>
+                        <td><strong>{{ reg.name }}</strong></td>
+                        <td>{{ reg.student_id }}</td>
+                        <td>{{ reg.email }}</td>
+                        <td>{{ reg.event.name }}</td>
+                        <td>{{ reg.registered_at|date:"M d, Y h:i A" }}</td>
+                        <td>
+                            {% if reg.is_valid %}
+                                <span class="badge badge-valid"><i class="fas fa-check-circle"></i> Valid</span>
+                            {% else %}
+                                <span class="badge badge-used"><i class="fas fa-times-circle"></i> Used</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reg.has_attended %}
+                                <span class="badge badge-attended"><i class="fas fa-user-check"></i> Yes</span>
+                            {% else %}
+                                <span>-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" style="text-align: center; padding: 3rem; color: #666;">No registrations yet</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <footer class="footer"><p>&copy; 2025 EventPass Pro. All rights reserved.</p></footer>
+    <script>
+        async function logout() { try { const response = await fetch('/api/admin/logout/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') }, credentials: 'include' }); if (response.ok) { window.location.href = '/admin-login/'; } } catch (error) { console.error('Error logging out:', error); window.location.href = '/admin-login/'; } }
+        function getCookie(name) { let cookieValue = null; if (document.cookie && document.cookie !== '') { const cookies = document.cookie.split(';'); for (let i = 0; i < cookies.length; i++) { const cookie = cookies[i].trim(); if (cookie.substring(0, name.length + 1) === (name + '=')) { cookieValue = decodeURIComponent(cookie.substring(name.length + 1)); break; } } } return cookieValue; }
+    </script>
+</body>
+</html>

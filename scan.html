@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gate Pass Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #5C6BC0;
+            --success-color: #4CAF50;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .pass-details {
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .pass-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .pass-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pass-header p {
+            opacity: 0.9;
+        }
+
+        .status-valid {
+            background-color: var(--success-color);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .pass-body {
+            padding: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            padding: 1.5rem;
+            background: var(--background-color);
+            border-radius: 8px;
+        }
+
+        .info-item h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .info-item p {
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .timestamp {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .pass-header {
+                padding: 1.5rem;
+            }
+
+            .pass-body {
+                padding: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-ticket-alt"></i>
+            <span>EventPass Pro</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="pass-details">
+            <div class="pass-header">
+                <h1>Gate Pass Details</h1>
+                <p>Valid Event Pass</p>
+            </div>
+            <div class="status-valid">
+                <i class="fas fa-check-circle"></i> VALID PASS
+            </div>
+            <div class="pass-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3><i class="fas fa-user"></i> Full Name</h3>
+                        <p id="visitorName">Loading...</p>
+                    </div>
+                    <div class="info-item">
+                        <h3><i class="fas fa-id-card"></i> Event ID</h3>
+                        <p id="visitorId">Loading...</p>
+                    </div>
+                    <div class="info-item">
+                        <h3><i class="fas fa-envelope"></i> Email</h3>
+                        <p id="visitorEmail">Loading...</p>
+                    </div>
+                    <div class="info-item">
+                        <h3><i class="fas fa-clock"></i> Scan Time</h3>
+                        <p id="scanTime">Loading...</p>
+                    </div>
+                </div>
+                <div class="timestamp">
+                    Scanned on <span id="scanDate">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to parse URL parameters
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const data = params.get('data');
+            if (data) {
+                try {
+                    return JSON.parse(decodeURIComponent(data));
+                } catch (e) {
+                    // Handle old format
+                    const lines = data.split('\\n');
+                    const result = {};
+                    lines.forEach(line => {
+                        const [key, value] = line.split(': ');
+                        result[key.toLowerCase()] = value;
+                    });
+                    return result;
+                }
+            }
+            return null;
+        }
+
+        // Function to format date
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            }).format(date);
+        }
+
+        // Update the UI with visitor details
+        window.addEventListener('DOMContentLoaded', () => {
+            const data = getQueryParams();
+            if (data) {
+                document.getElementById('visitorName').textContent = data.name || 'N/A';
+                document.getElementById('visitorId').textContent = data.id || 'N/A';
+                document.getElementById('visitorEmail').textContent = data.email || 'N/A';
+                
+                const now = new Date();
+                document.getElementById('scanTime').textContent = now.toLocaleTimeString();
+                document.getElementById('scanDate').textContent = formatDate(now);
+            } else {
+                document.querySelector('.status-valid').className = 'status-invalid';
+                document.querySelector('.status-valid').innerHTML = '<i class="fas fa-times-circle"></i> INVALID OR EXPIRED PASS';
+                document.querySelector('.status-valid').style.backgroundColor = '#dc3545';
+            }
+        });
+    </script>
+</body>
+</html>
