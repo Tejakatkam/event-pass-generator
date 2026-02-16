@@ -50,9 +50,7 @@ def download_event_registrations_pdf(request, event_id):
     elements.append(Paragraph(f"Event: {event.name}", styles['Title']))
     elements.append(Spacer(1, 0.3 * inch))
 
-    data = [
-        ["Name", "Student ID", "Email", "Registered At", "Attended"]
-    ]
+    data = [["Name", "Student ID", "Email", "Registered At", "Attended"]]
 
     for reg in registrations:
         data.append([
@@ -67,7 +65,6 @@ def download_event_registrations_pdf(request, event_id):
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
     ]))
 
     elements.append(table)
@@ -81,8 +78,6 @@ def download_event_registrations_pdf(request, event_id):
             'Content-Disposition': f'attachment; filename="{event.name}_registrations.pdf"'
         }
     )
-
-
 
 
 def download_admin_report_pdf(request):
