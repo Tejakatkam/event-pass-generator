@@ -2,6 +2,7 @@ services:
   - type: web
     name: event-pass-generator
     env: python
+    plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn eventpass_backend.wsgi"
     envVars:
