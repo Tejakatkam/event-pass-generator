@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from .views import download_admin_report_pdf, download_event_registrations_pdf
 
-
+app_name = 'events'
 router = DefaultRouter()
 router.register(r'events', views.EventViewSet, basename='event')
 router.register(r'registrations', views.RegistrationViewSet, basename='registration')
@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/admin/logout/', views.admin_logout_view, name='admin-logout'),
     
     # Template views
+    path('', include('events.urls')),
     path('', views.index_view, name='index'),
     path('events/', views.events_view, name='events'),
     path('scan/', views.scan_view, name='scan'),
