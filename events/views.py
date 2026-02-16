@@ -55,7 +55,7 @@ def download_admin_report_pdf(request):
 
     for admin in admins:
         events = Event.objects.filter(created_by=admin)
-        event_names = ", ".join([event.title for event in events])
+        event_names = ", ".join([event.name for event in events])
         data.append([admin.username, admin.email, event_names or "No Events"])
 
     table = Table(data, repeatRows=1)
