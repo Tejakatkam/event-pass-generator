@@ -35,6 +35,54 @@ from io import BytesIO
 from django.contrib.auth.models import User
 from .models import Event, Registration
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def download_event_registrations_pdf(request, event_id):
+    event = Event.objects.get(id=event_id)
+    registrations = event.registrations.all()
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+
+    styles = getSampleStyleSheet()
+    elements.append(Paragraph(f"Event: {event.name}", styles['Title']))
+    elements.append(Spacer(1, 0.3 * inch))
+
+    data = [
+        ["Name", "Student ID", "Email", "Registered At", "Attended"]
+    ]
+
+    for reg in registrations:
+        data.append([
+            reg.name,
+            reg.student_id,
+            reg.email,
+            reg.registered_at.strftime("%d-%m-%Y %H:%M"),
+            "Yes" if reg.has_attended else "No"
+        ])
+
+    table = Table(data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    buffer.seek(0)
+    return HttpResponse(
+        buffer,
+        content_type='application/pdf',
+        headers={
+            'Content-Disposition': f'attachment; filename="{event.name}_registrations.pdf"'
+        }
+    )
+
+
 
 
 def download_admin_report_pdf(request):

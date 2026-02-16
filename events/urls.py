@@ -29,5 +29,5 @@ urlpatterns = [
     path('admin-panel/logs/', views.admin_logs_view, name='admin-logs'),
     path("download/admin-report/", views.download_admin_report_pdf, name="download_admin_report"),
     path("download/event/<int:event_id>/", views.download_event_registrations_pdf, name="download_event_pdf"),
-
+    path("admin-panel/events/<uuid:event_id>/download/",views.download_event_registrations_pdf,name="download_event_registrations_pdf"),
 ]
