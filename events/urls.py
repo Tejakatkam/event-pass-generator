@@ -1,6 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
+from .views import download_admin_report_pdf, download_event_registrations_pdf
+
 
 router = DefaultRouter()
 router.register(r'events', views.EventViewSet, basename='event')
@@ -30,4 +32,7 @@ urlpatterns = [
     path("download/admin-report/", views.download_admin_report_pdf, name="download_admin_report"),
     path("download/event/<int:event_id>/", views.download_event_registrations_pdf, name="download_event_pdf"),
     path("admin-panel/events/<uuid:event_id>/download/",views.download_event_registrations_pdf,name="download_event_registrations_pdf"),
+    path('download/admin-report/', download_admin_report_pdf, name='download_admin_report_pdf'),
+    path('download/event/<uuid:event_id>/', download_event_registrations_pdf, name='download_event_registrations_pdf'),
+
 ]
