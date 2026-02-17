@@ -126,7 +126,7 @@ def download_event_registrations_pdf(request, event_id):
 
     event = Event.objects.get(id=event_id)
 
-    elements.append(Paragraph(f"Registrations for {event.title}", styles['Title']))
+    elements.append(Paragraph(f"Registrations for {event.name}", styles['Title']))
     elements.append(Spacer(1, 0.5 * inch))
 
     registrations = Registration.objects.filter(event=event)
