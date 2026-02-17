@@ -115,21 +115,18 @@ def download_admin_report_pdf(request):
     buffer.close()
     return response
 
+@login_required
 def download_event_registrations_pdf(request, event_id):
-    buffer = BytesIO()
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="event_registrations.pdf"'
+    event = get_object_or_404(Event, id=event_id)
+    registrations = Registration.objects.filter(event=event)
 
+    buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elements = []
     styles = getSampleStyleSheet()
 
-    event = Event.objects.get(id=event_id)
-
     elements.append(Paragraph(f"Registrations for {event.name}", styles['Title']))
     elements.append(Spacer(1, 0.5 * inch))
-
-    registrations = Registration.objects.filter(event=event)
 
     data = [["Name", "Email", "Student ID", "Registration ID"]]
 
@@ -138,7 +135,7 @@ def download_event_registrations_pdf(request, event_id):
             reg.name,
             reg.email,
             reg.student_id,
-            reg.registration_id
+            str(reg.id)[:8]
         ])
 
     table = Table(data, repeatRows=1)
@@ -151,9 +148,15 @@ def download_event_registrations_pdf(request, event_id):
     elements.append(table)
     doc.build(elements)
 
-    response.write(buffer.getvalue())
-    buffer.close()
-    return response
+    buffer.seek(0)
+    return HttpResponse(
+        buffer,
+        content_type='application/pdf',
+        headers={
+            'Content-Disposition': f'attachment; filename="{event.name}_registrations.pdf"'
+        }
+    )
+
 
 def send_registration_email(registration, qr_code_image_base64):
     """Send registration confirmation email with QR code"""
