@@ -118,113 +118,44 @@ def download_admin_report_pdf(request):
 @login_required
 def download_event_registrations_pdf(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    registrations = event.registrations.all()
+    registrations = Registration.objects.filter(event=event)
 
     buffer = BytesIO()
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{event.name}_registrations.pdf"'
-
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elements = []
     styles = getSampleStyleSheet()
 
-    # =========================
-    # 🔷 COLLEGE HEADER
-    # =========================
-
-    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'cmrtc.png')
-
-    if os.path.exists(logo_path):
-        logo = Image(logo_path, width=1.2*inch, height=1.2*inch)
-        logo.hAlign = 'CENTER'
-        elements.append(logo)
-
-    elements.append(Spacer(1, 0.2 * inch))
-
-    elements.append(Paragraph(
-        "<b>CMR TECHNICAL CAMPUS</b>",
-        styles['Heading1']
-    ))
-
-    elements.append(Paragraph(
-        "Autonomous | ESTD: 2009 | Hyderabad",
-        styles['Normal']
-    ))
-
-    elements.append(Spacer(1, 0.3 * inch))
-
-    elements.append(Paragraph(
-        f"<b>Event Registration Report</b>",
-        styles['Heading2']
-    ))
-
-    elements.append(Spacer(1, 0.2 * inch))
-
-    elements.append(Paragraph(
-        f"Event Name: <b>{event.name}</b>",
-        styles['Normal']
-    ))
-
+    elements.append(Paragraph(f"Registrations for {event.name}", styles['Title']))
     elements.append(Spacer(1, 0.5 * inch))
 
-    # =========================
-    # 🔷 TABLE SECTION
-    # =========================
+    data = [["Name", "Email", "Student ID", "Registration ID"]]
 
-    data = [
-        ["S.No", "Student ID", "Student Name", "Student Email", "Register ID"]
-    ]
-
-    for index, reg in enumerate(registrations, start=1):
+    for reg in registrations:
         data.append([
-            index,
-            reg.student_id,
             reg.name,
             reg.email,
-            str(reg.id)[:8].upper()
+            reg.student_id,
+            str(reg.id)[:8]
         ])
 
-    table = Table(data, repeatRows=1, colWidths=[0.7*inch, 1.2*inch, 1.5*inch, 2*inch, 1.2*inch])
-
+    table = Table(data, repeatRows=1)
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 9),
     ]))
 
     elements.append(table)
-
-    # =========================
-    # 🔷 SIGNATURE SECTION
-    # =========================
-
-    elements.append(Spacer(1, 1 * inch))
-
-    signature_data = [
-        ["", ""],
-        ["Coordinator Signature", "HoD Signature"]
-    ]
-
-    signature_table = Table(signature_data, colWidths=[3*inch, 3*inch])
-
-    signature_table.setStyle(TableStyle([
-        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
-        ('LINEABOVE', (0, 1), (0, 1), 1, colors.black),
-        ('LINEABOVE', (1, 1), (1, 1), 1, colors.black),
-    ]))
-
-    elements.append(signature_table)
-
     doc.build(elements)
 
-    response.write(buffer.getvalue())
-    buffer.close()
-
-    return response
-
+    buffer.seek(0)
+    return HttpResponse(
+        buffer,
+        content_type='application/pdf',
+        headers={
+            'Content-Disposition': f'attachment; filename="{event.name}_registrations.pdf"'
+        }
+    )
 
 
 def send_registration_email(registration, qr_code_image_base64):
