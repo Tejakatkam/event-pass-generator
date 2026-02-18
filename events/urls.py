@@ -33,5 +33,6 @@ urlpatterns = [
 
     # PDF Downloads
     path('download/admin-report/', views.download_admin_report_pdf, name='download_admin_report_pdf'),
+    
 ]
 
